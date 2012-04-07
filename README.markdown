@@ -18,9 +18,36 @@ mandrill-php is a PHP library for interfacing with MailChimp's Mandrill API
         // Include Mandrill class
         require('../Mandrill.php');
         
+        // The API key can be set in a number of ways, and once it is set it reamins
+        // set for subsiquent calls. Here are a few methods of setting the API key.
+        Mandrill::setKey('mykey');
+        Mandrill::setApiKey('mykey');
+        
+        // Setting the API key via cosntant
+        define('MANDRILL_API_KEY','mykey');
+        
+        // As a special case, calling setApiKey without an argument sets the api key 
+        // in the class to null.
+        Mandrill::setApiKey();
+        
         // Call Mandrill API's users.info call
         // The docs for this call can be found at http://mandrillapp.com/api/docs/users.html#method=info
+        // Also note that the api key can be set and reset with each call request so
+        // the following two queries will work.
         Mandrill::call(array('key'=>'mykey', 'type'=>'users', 'call'=>'info'));
+        Mandrill::call(array('type'=>'users', 'call'=>'info'));
+        
+        // The associative array sent is validated against an internal static list of
+        // valid Mandrill queries and an exception is raised if an invalid query is specified.
+        // For example, the following will produce an error.
+        Mandrill::call(array('type'=>'bad_users', 'call'=>'ping'));
+        
+        // Setting verbosity to true prints some extra debuggin lines, like the exact 
+        // URL and arguments sent to the Mandrill service
+        Mandrill::toggleVerbose();
+        Mandrill::setVerbose(true);
+        
+        // getLastError returns the last verification
 
 ##Contributions
 
