@@ -236,6 +236,13 @@ abstract class Mandrill {
 			case 'getApiCalls':
 				return self::api_calls();;
 			break;
+			case 'setVerbose':
+				if(count($args) < 1) self::$verbose = false;
+				else self::$verbose = (bool) $args[0];
+			break;
+			case 'toggleVerbose':
+				self::$verbose = !self::$verbose;
+			break;
 			case 'version':
 			case 'getVersion':
 				return self::$version;
