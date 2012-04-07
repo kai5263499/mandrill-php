@@ -42,12 +42,21 @@ mandrill-php is a PHP library for interfacing with MailChimp's Mandrill API
         // For example, the following will produce an error.
         Mandrill::call(array('type'=>'bad_users', 'call'=>'ping'));
         
+        // getApiCalls() returns an associative array of valid API queries broken down by
+        // call type, ie. users
+        Mandrill::getApiCalls();
+        
+        // For a list of valid calls please visit http://mandrillapp.com/api/docs/index.html
+        
         // Setting verbosity to true prints some extra debuggin lines, like the exact 
         // URL and arguments sent to the Mandrill service
         Mandrill::toggleVerbose();
         Mandrill::setVerbose(true);
         
-        // getLastError returns the last verification
+        // getLastError returns the verification error string produced by the last ::call()
+        // This is mostly used to produce the verification exception message but it may be
+        // useful to you.
+        Mandrill::getLastError();
 
 ##Contributions
 
