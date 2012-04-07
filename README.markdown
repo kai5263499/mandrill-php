@@ -4,8 +4,10 @@ mandrill-php is a PHP library for interfacing with MailChimp's Mandrill API
 
 ##Installation
 
-        //Include the Mandrill class
-        require('Mandrill.php')
+```php
+//Include the Mandrill class
+require('Mandrill.php');
+```
 
 ##Requirements
 
