@@ -7,4 +7,4 @@
 require('../Mandrill.php');
 require('config.php');
 
-Mandrill::call(array('type'=>'users', 'call'=>'info'));
+print_r(Mandrill::call(array('type'=>'users', 'call'=>'disable-sender', 'domain':'werxltd.com')));

@@ -7,4 +7,4 @@
 require('../Mandrill.php');
 require('config.php');
 
-Mandrill::call(array('type'=>'users', 'call'=>'info'));
+Mandrill::call(array('type'=>'users', 'call'=>'senders'));
