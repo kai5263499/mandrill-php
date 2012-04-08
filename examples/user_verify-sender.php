@@ -5,5 +5,6 @@
  */
 
 require('../Mandrill.php');
+require('config.php');
 
-Mandrill::call(array('key'=>'mykey', 'type'=>'users', 'call'=>'info'));
+Mandrill::call(array('type'=>'users', 'call'=>'verify-sender', 'email'=>'wes@werxltd.com'));

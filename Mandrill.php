@@ -16,6 +16,14 @@
   */
 abstract class Mandrill {
     /**
+     * Stores the operating enviroment state. Null means the state has not been evaluated yet.
+     * @since 1.0
+     * @static
+     * @ignore
+     */
+    private static $is_cli         = null;
+
+    /**
      * The current Mandrill PHP lib version
      * @since 1.0
      * @static
@@ -61,7 +69,7 @@ abstract class Mandrill {
      * @static
      * @ignore
      */
-    private static $required_key   = array('required'=>array('key'));
+    private static $required_key   = array('key');
     
     /**
      * Stores last validation error message
@@ -72,10 +80,23 @@ abstract class Mandrill {
     private static $last_error     = null;
     
     /**
+     * Returns true if the class is being run from the command line, caches result
+     * @since 1.0
+     * @static
+     * @ignore
+     * @return bool True if the script is being run from a CLI or false if its being run from a webserver
+     */
+    private static function _is_cli() {
+        if(is_null(self::$is_cli)) self::$is_cli = !isset($_SERVER['HTTP_USER_AGENT']);
+        return self::$is_cli;
+    }
+    
+    /**
      * Generates a structured array of valid Mandrill API calls
      * @since 1.0
      * @static
      * @ignore
+     * @returns mixed Associative array of valid calls and their required parameters
      */
     private static function api_calls() {
         if(is_null(self::$api_calls)) self::$api_calls = array(
@@ -84,45 +105,45 @@ abstract class Mandrill {
                 'info'             => self::$required_key,
                 'ping'             => self::$required_key,
                 'senders'          => self::$required_key,
-                'disable-sender'   => array_merge_recursive(self::$required_key, array('required'=>array('domain'))),
-                'verify-sender'    => array_merge_recursive(self::$required_key, array('required'=>array('email')))
+                'disable-sender'   => array_merge_recursive(self::$required_key, array('domain')),
+                'verify-sender'    => array_merge_recursive(self::$required_key, array('email'))
             ),
             
             /* Messages Calls */
             'messages'=>array(
-                'send'             => array_merge_recursive(self::$required_key, array('required'=>array('message'))),
-                'send-template'    => array_merge_recursive(self::$required_key, array('required'=>array('template_name','template_content','message'))),
-                'search'           => array_merge_recursive(self::$required_key, array('required'=>array('query','date_from','date_to','tags','senders','limit')))
+                'send'             => array_merge_recursive(self::$required_key, array('message')),
+                'send-template'    => array_merge_recursive(self::$required_key, array('template_name','template_content','message')),
+                'search'           => array_merge_recursive(self::$required_key, array('query','date_from','date_to','tags','senders','limit'))
             ),
             
             /* Tags Calls */
             'tags'=>array(
                 'list'             => self::$required_key,
-                'info'             => array_merge_recursive(self::$required_key, array('required'=>array('tag'))),
-                'time-series'      => array_merge_recursive(self::$required_key, array('required'=>array('tag'))),
+                'info'             => array_merge_recursive(self::$required_key, array('tag')),
+                'time-series'      => array_merge_recursive(self::$required_key, array('tag')),
                 'all-time-series'  => self::$required_key
             ),
             
             /* Senders Calls */
             'senders'=>array(
                 'list'             => self::$required_key,
-                'info'             => array_merge_recursive(self::$required_key, array('required'=>array('address'))),
-                'time-series'      => array_merge_recursive(self::$required_key, array('required'=>array('address')))
+                'info'             => array_merge_recursive(self::$required_key, array('address')),
+                'time-series'      => array_merge_recursive(self::$required_key, array('address'))
             ),
             
             /* Urls Calls */
             'urls'=>array(
                 'list'             => self::$required_key,
-                'search'           => array_merge_recursive(self::$required_key, array('required'=>array('q'))),
-                'time-series'      => array_merge_recursive(self::$required_key, array('required'=>array('url')))
+                'search'           => array_merge_recursive(self::$required_key, array('q')),
+                'time-series'      => array_merge_recursive(self::$required_key, array('url'))
             ),
             
             /* Templates Calls */
             'templates'=>array(
-                'add'              => array_merge_recursive(self::$required_key, array('required'=>array('name','code'))),
-                'info'             => array_merge_recursive(self::$required_key, array('required'=>array('name'))),
-                'update'           => array_merge_recursive(self::$required_key, array('required'=>array('name','code'))),
-                'delete'           => array_merge_recursive(self::$required_key, array('required'=>array('name'))),
+                'add'              => array_merge_recursive(self::$required_key, array('name','code')),
+                'info'             => array_merge_recursive(self::$required_key, array('name')),
+                'update'           => array_merge_recursive(self::$required_key, array('name','code')),
+                'delete'           => array_merge_recursive(self::$required_key, array('name')),
                 'list'             => self::$required_key
             )
         );
@@ -144,7 +165,8 @@ abstract class Mandrill {
         if(!array_key_exists($call_type,self::api_calls())) throw new Exception('Invalid call type.');
         if(!array_key_exists($call, self::api_calls()[$call_type])) throw new Exception("Invalid call for call type $call_type");
         
-        $diff_keys = array_diff(array_keys($data),self::api_calls()[$call_type]);
+        $diff_keys = array_diff(array_keys($data),self::api_calls()[$call_type][$call]);
+        
         if(self::$verbose) error_log('MANDRILL: Invalid keys in call: '.implode(',',$diff_keys));
         if(count($diff_keys) > 0) throw new Exception('Invalid keys in call: '.implode(',',$diff_keys));
         
@@ -201,6 +223,7 @@ abstract class Mandrill {
         $parsed_url = sprintf(self::$api_url, $call_type, $call);
         
         if(self::$verbose) error_log("MANDRILL: Sending request to: $parsed_url with data: $data_string");
+        if(self::_is_cli()) echo "MANDRILL: Sending request to: $parsed_url with data: $data_string".PHP_EOL;
         
         $ch = curl_init($parsed_url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
@@ -212,6 +235,8 @@ abstract class Mandrill {
         );                                                                                                               
          
         $result = curl_exec($ch);
+        
+        if(self::_is_cli()) echo "Mandrill API result: $result".PHP_EOL;
         
         if($call != 'ping') $result = json_decode($result);
         
