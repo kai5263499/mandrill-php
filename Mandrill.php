@@ -145,6 +145,15 @@ abstract class Mandrill {
                 'update'           => array_merge_recursive(self::$required_key, array('name','code')),
                 'delete'           => array_merge_recursive(self::$required_key, array('name')),
                 'list'             => self::$required_key
+            ),
+            
+            /* Webhooks Calls */
+            'webhooks'=>array(
+                'list'             => self::$required_key,
+                'add'              => array_merge_recursive(self::$required_key, array('url','events')),
+                'info'             => array_merge_recursive(self::$required_key, array('id')),
+                'update'           => array_merge_recursive(self::$required_key, array('id','url','events')),
+                'delete'           => array_merge_recursive(self::$required_key, array('id'))
             )
         );
         
