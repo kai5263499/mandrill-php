@@ -87,7 +87,7 @@ abstract class Mandrill {
      * @return bool True if the script is being run from a CLI or false if its being run from a webserver
      */
     private static function _is_cli() {
-        if(is_null(self::$is_cli)) self::$is_cli = !isset($_SERVER['HTTP_USER_AGENT']);
+        if(is_null(self::$is_cli)) self::$is_cli = php_sapi_name() == 'cli';
         return self::$is_cli;
     }
     
