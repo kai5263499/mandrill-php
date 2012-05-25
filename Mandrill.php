@@ -171,7 +171,7 @@ abstract class Mandrill {
      * @ignore
      */
     private static function _validate_call(&$call_type,&$call,&$data) {
-		$api_calls = self::api_calls();
+        $api_calls = self::api_calls();
 
         if(!array_key_exists($call_type,$api_calls)) throw new Exception('Invalid call type.');
         if(!array_key_exists($call, $api_calls[$call_type])) throw new Exception("Invalid call for call type $call_type");
