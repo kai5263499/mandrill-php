@@ -171,10 +171,12 @@ abstract class Mandrill {
      * @ignore
      */
     private static function _validate_call(&$call_type,&$call,&$data) {
-        if(!array_key_exists($call_type,self::api_calls())) throw new Exception('Invalid call type.');
-        if(!array_key_exists($call, self::api_calls()[$call_type])) throw new Exception("Invalid call for call type $call_type");
+		$api_calls = self::api_calls();
+
+        if(!array_key_exists($call_type,$api_calls)) throw new Exception('Invalid call type.');
+        if(!array_key_exists($call, $api_calls[$call_type])) throw new Exception("Invalid call for call type $call_type");
         
-        $diff_keys = array_diff(array_keys($data),self::api_calls()[$call_type][$call]);
+        $diff_keys = array_diff(array_keys($data),$api_calls[$call_type][$call]);
         
         if(self::$verbose) error_log('MANDRILL: Invalid keys in call: '.implode(',',$diff_keys));
         if(count($diff_keys) > 0) throw new Exception('Invalid keys in call: '.implode(',',$diff_keys));
