@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This examples shows how Mandrill library is used to obtain information about a user.
+ * This examples shows how Mandrill library is used to send a message.
  */
 
 require('../Mandrill.php');
