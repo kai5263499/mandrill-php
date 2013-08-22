@@ -25,7 +25,7 @@ require('Mandrill.php');
         Mandrill::setKey('mykey');
         Mandrill::setApiKey('mykey');
         
-        // Setting the API key via cosntant
+        // Setting the API key via constant
         define('MANDRILL_API_KEY','mykey');
         
         // As a special case, calling setApiKey without an argument sets the api key 
